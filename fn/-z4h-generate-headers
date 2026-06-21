@@ -1,0 +1,41 @@
+#!/usr/bin/env zsh
+# Args: $1 = curcontext
+# Reads: _z4h_groups[], _z4h_group_colors[]
+# Sets:  _z4h_headers[]
+
+typeset -ga _z4h_headers=()
+
+local -a group_colors
+zstyle -a ":z4h:${1#*:}" group-colors group_colors || group_colors=($_z4h_group_colors)
+
+# Skip if no groups
+if (( $#_z4h_groups == 0 )); then
+  return
+fi
+
+local -i mlen=0 len=0
+local i tmp
+
+# Calculate max column width
+for i in $_z4h_groups; do
+  (( $#i > mlen )) && mlen=$#i
+done
+(( mlen += 1 ))
+
+# Build multi-column header lines
+for (( i=1; i<=$#_z4h_groups; i++ )); do
+  [[ $_z4h_groups[i] == "__hide__"* ]] && continue
+
+  if (( len + $#_z4h_groups[i] > COLUMNS - 5 )); then
+    _z4h_headers+=$tmp
+    tmp='' && len=0
+  fi
+  if (( len + mlen > COLUMNS - 5 )); then
+    _z4h_headers+=$tmp${group_colors[i]}${_z4h_groups[i]}$'\033[00m'
+    tmp='' && len=0
+  else
+    tmp+=${group_colors[i]}${(r:$mlen:)_z4h_groups[i]}$'\033[00m'
+    len+=$mlen
+  fi
+done
+(( $#tmp )) && _z4h_headers+=$tmp

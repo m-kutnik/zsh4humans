@@ -1,0 +1,50 @@
+#!/usr/bin/env zsh
+# Args: $1=pid $2=tmp_dir $3=offset(+1 or -1)
+# Our format: "desc\0group_idx<BS>color<desc><reset>" (grouped) or "desc\0desc" (non-grouped)
+
+emulate -L zsh -o extended_glob
+
+zmodload zsh/mapfile
+
+local pid=$1 tmp_dir=$2 offset=$3
+
+# Read completion list (mapfile preserves NUL bytes)
+local -a list=(${(f)mapfile[$tmp_dir/completions.$pid]})
+
+# Detect group SGR prefixes from field 2 (after first NUL byte)
+# Format is: group_idx<BS>SGR<desc><reset>
+# We need to skip group_idx and backspace to get to the SGR code
+local -Ua group_sgr_prefixes
+for line in $list; do
+  # Get field 2 (after first NUL)
+  local field2=${line#*$'\0'}
+  # Skip group_idx and backspace to get to SGR
+  local after_bs=${field2#*$'\b'}
+  # Extract ANSI SGR prefix
+  local prefix=$(echo -n "$after_bs" | command grep -a -o $'^\x1b\\[[0-9;]*m' 2>/dev/null)
+  [[ -n $prefix ]] && group_sgr_prefixes+=$prefix
+done
+
+# If only marker is reset, no real groups
+if (( $#group_sgr_prefixes == 1 )) && [[ $group_sgr_prefixes[1] == $'\e[0m' ]]; then
+  group_sgr_prefixes=()
+fi
+
+# If no groups or only one group, just print all
+if (( $#group_sgr_prefixes <= 1 )); then
+  print -rl -- $list
+  exit 0
+fi
+
+# Calculate current group index
+local current=1
+if [[ -f $tmp_dir/current-group.$pid ]]; then
+  current=$(( $(<$tmp_dir/current-group.$pid) + offset ))
+fi
+(( current > $#group_sgr_prefixes )) && current=1
+(( current <= 0 )) && current=$#group_sgr_prefixes
+echo $current > $tmp_dir/current-group.$pid
+
+# Print only candidates whose field 2 (after backspace) starts with current group's SGR prefix
+local current_prefix=$group_sgr_prefixes[current]
+print -rl -- ${(M)list:#*$'\b'${current_prefix}*}

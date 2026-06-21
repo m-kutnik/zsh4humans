@@ -41,15 +41,70 @@
     --query=${_z4h_word_prefix:+"^$_z4h_word_prefix"}
     --color=hl:201,hl+:201
     --with-nth=2
-    --delimiter='\000'
+    --delimiter='\x00'
     --ansi
     --exact
     --no-mouse
     --tiebreak=length,begin,index
     --multi
     --cycle
-    --border=horizontal
+    --border=rounded
   )
+
+  # Grouping support
+  local -a group_colors
+  zstyle -a ":z4h:fzf-complete" group-colors group_colors || group_colors=($_z4h_group_colors)
+  local -i show_groups=1
+  local show_groups_str
+  zstyle -s ":z4h:fzf-complete" show-group show_groups_str && {
+    [[ $show_groups_str == none ]] && show_groups=0
+    [[ $show_groups_str == brief ]] && show_groups=2
+  }
+
+  # Generate headers and add to opts
+  -z4h-generate-headers "$_z4h_curcontext"
+  if (( $#_z4h_headers > 0 )); then
+    local header_text="${(j:  :)_z4h_headers}"
+    opts+=(--header="$header_text")
+  fi
+
+  # Add F1/F2 binds for group switching
+  local tmp_dir=${TMPPREFIX:-/tmp/zsh}-z4h-group-$USER
+  [[ -d $tmp_dir ]] || command mkdir $tmp_dir
+  local switch_script=$Z4H/zsh4humans/fn/-z4h-switch-group
+  local -i pid=$sysparams[pid]
+  opts+=(
+    --bind="F1:reload(zsh -f $switch_script $pid $tmp_dir -1)"
+    --bind="F2:reload(zsh -f $switch_script $pid $tmp_dir +1)"
+  )
+
+  # Build candidates and write to temp file (preserving NUL bytes)
+  local bs=$'\b'
+  {
+    if (( sort )); then
+      local rows=()
+      for idx in $indices; do
+        local gi=$_z4h_group_indices[idx]
+        if (( gi > 0 && show_groups )); then
+          local color=$group_colors[gi]
+          rows+=("${gi}${bs}${color}${_z4h_descrs[idx]}"$'\033[00m'$'\0'"${idx}")
+        else
+          rows+=("${_z4h_descrs[idx]}"$'\0'"${idx}")
+        fi
+      done
+      printf '%2$s\0%1$s\n' "${(@0)${(@o)rows}}"
+    else
+      for idx in $indices; do
+        local gi=$_z4h_group_indices[idx]
+        if (( gi > 0 && show_groups )); then
+          local color=$group_colors[gi]
+          printf '%s\0%s\n' "${idx}" "${gi}${bs}${color}${_z4h_descrs[idx]}"$'\033[00m'
+        else
+          printf '%s\0%s\n' $idx "$_z4h_descrs[idx]"
+        fi
+      done
+    fi
+  } > $tmp_dir/completions.$pid
 
   local cursor_y cursor_x
   -z4h-get-cursor-pos || return
@@ -86,26 +141,9 @@
   {
     local choice
     choice="$(
-      unsetopt pipe_fail
-      exec 2>/dev/null
-      {
-        # TODO: colorize files.
-        if (( sort )); then
-          local rows=()
-          for idx in $indices; do
-            rows+=($_z4h_descrs[idx]$'\0'$idx)
-          done
-          printf '%2$s\0%1$s\n' "${(@0)${(@o)rows}}"
-        else
-          for idx in $indices; do
-            printf '%s\0%s\n' $idx "$_z4h_descrs[idx]"
-          done
-        fi
-      } | {
-        print -rnu $_z4h_tty_fd -- $move
-        -z4h-cursor-show
-        2>&$_z4h_tty_fd -z4h-fzf $opts
-      }
+      print -rnu $_z4h_tty_fd -- $move
+      -z4h-cursor-show
+      2>&$_z4h_tty_fd -z4h-fzf $opts < $tmp_dir/completions.$pid
     )"
   } always {
     -z4h-cursor-hide

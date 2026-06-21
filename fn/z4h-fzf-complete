@@ -102,12 +102,13 @@ done
   }
 
   function compadd() {
-    local -a _z4h_{opts,nDOA,q,f,s,S,I,W,i,P,p,d,r,R,e,U}
+    local -a _z4h_{opts,nDOA,q,f,s,S,I,W,i,P,p,d,r,R,e,U,X}
     zparseopts -E -a _z4h_opts {D,O,A}+:=_z4h_nDOA n+=_z4h_nDOA \
       f+=_z4h_f s+:=_z4h_s S+:=_z4h_S I+:=_z4h_I W+:=_z4h_W     \
       i+:=_z4h_i P+:=_z4h_P p+:=_z4h_p d+:=_z4h_d q+=_z4h_q     \
       r+:=_z4h_r R+:=_z4h_R e+=_z4h_e U+=_z4h_U                 \
-      {a,k,l,1,2,C,Q}+ {F,J,X,x,V,E,M}+: o+::
+      X+:=_z4h_X \
+      {a,k,l,1,2,C,Q}+ {F,J,x,V,E,M}+: o+::                       # removed X+: from here
     if (( ${#_z4h_nDOA} )); then
       $_z4h_orig_compadd "$@"
       return
@@ -141,6 +142,23 @@ done
     fi
     _z4h_words+=("${_z4h_A[@]}")
     _z4h_descrs+=("${_z4h_D[@]}")
+    # Extract group description (-X flag). Only the first -X matters.
+    local _z4h_group_name=${_z4h_X[2]:-}
+    local -i _z4h_gi=0
+
+    # Register group if new
+    if [[ -n $_z4h_group_name ]]; then
+      _z4h_gi=${_z4h_groups[(ie)$_z4h_group_name]}
+      if (( _z4h_gi > $#_z4h_groups )); then
+        _z4h_groups+=($_z4h_group_name)
+        _z4h_gi=$#_z4h_groups
+      fi
+    fi
+
+    # Assign group index to each new word
+    repeat $#_z4h_A; do
+      _z4h_group_indices+=($_z4h_gi)
+    done
     if (( ! $#_z4h_U )); then
       _z4h_i=(-i "$IPREFIX$_z4h_i[2]")
       _z4h_I=(-I "$_z4h_I[2]$ISUFFIX")
@@ -185,6 +203,8 @@ done
       local -i _z4h_in_quotes=0
       local _z4h_curcontext=
       local _z4h_word_prefix=
+      local -a _z4h_groups=()        # ordered unique group names
+      local -a _z4h_group_indices=()  # per-word group index (parallel to _z4h_words)
 
       functions -c -- -z4h-main-complete _main_complete
       builtin zle expand-or-complete

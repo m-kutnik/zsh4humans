@@ -667,6 +667,26 @@ fi
 
 typeset -grA _z4h_key
 
+# Group color palette for fzf completion grouping (user-overridable via zstyle)
+typeset -ga _z4h_group_colors=(
+  $'\x1b[94m'    # bright blue
+  $'\x1b[32m'    # green
+  $'\x1b[33m'    # yellow
+  $'\x1b[35m'    # magenta
+  $'\x1b[31m'    # red
+  $'\x1b[38;5;27m'  # medium blue
+  $'\x1b[36m'    # cyan
+  $'\x1b[38;5;100m' # dark yellow
+  $'\x1b[38;5;98m'  # purple
+  $'\x1b[91m'    # bright red
+  $'\x1b[38;5;80m'  # light cyan
+  $'\x1b[92m'    # bright green
+  $'\x1b[38;5;21m'  # orange
+  $'\x1b[38;5;165m' # pink
+  $'\x1b[38;5;124m' # dark red
+  $'\x1b[38;5;120m' # light green
+)
+
 # Configure completions.
 zstyle ':completion:*'               matcher-list      "m:{a-z}={A-Z}"
 zstyle ':completion:*'               menu              "false"
