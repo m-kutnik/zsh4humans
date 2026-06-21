@@ -45,7 +45,7 @@ add-zsh-hook -- precmd  -z4h-set-term-title-precmd                     || return
 local pkg
 typeset -gA _z4h_use
 for pkg in fzf powerlevel10k systemd zsh-history-substring-search \
-          zsh-completions zsh-autosuggestions zsh-syntax-highlighting; do
+          zsh-completions zsh-syntax-highlighting; do
   zstyle -t :z4h:$pkg channel none || _z4h_use[$pkg]=1
 done
 typeset -grA _z4h_use
@@ -176,7 +176,6 @@ zle -N z4h-cd-up
 zle -N z4h-cd-down
 zle -N z4h-fzf-history
 zle -N z4h-fzf-dir-history
-zle -N z4h-autosuggest-accept
 zle -N z4h-do-nothing
 zle -N z4h-clear-screen-soft-top
 zle -N z4h-clear-screen-soft-bottom
@@ -351,9 +350,6 @@ bindkey   '^[J'     kill-buffer                    # alt+J
 # Push buffer to ephemeral history (won't be saved to HISTFILE) and delete all lines.
 bindkey   '^[o'     z4h-stash-buffer               # alt+o
 bindkey   '^[O'     z4h-stash-buffer               # alt+O
-# Accept autosuggestion.
-bindkey   '^[m'     z4h-autosuggest-accept         # alt+m
-bindkey   '^[M'     z4h-autosuggest-accept         # alt+M
 # Undo and redo.
 bindkey   '^[[Z'    undo                           # shift+tab
 bindkey   '^[/'     redo                           # alt+/
@@ -475,8 +471,6 @@ if zstyle -T :z4h:bindkey macos-option-as-alt; then
   bindkey 'Ô'            kill-buffer                    # opt+J
   bindkey 'ø'            z4h-stash-buffer               # opt+o
   bindkey 'Ø'            z4h-stash-buffer               # opt+O
-  bindkey 'µ'            z4h-autosuggest-accept         # opt+m
-  bindkey 'Â'            z4h-autosuggest-accept         # opt+M
   bindkey '÷'            redo                           # opt+/
   bindkey '˙'            run-help                       # opt+h
   bindkey 'Ó'            run-help                       # opt+H
@@ -689,7 +683,7 @@ zstyle ':completion:*:paths'         accept-exact-dirs "true"
 zstyle ':completion:*'               single-ignored    "show"
 zstyle ':completion:*:functions'     ignored-patterns  "-*|_*"
 zstyle ':completion:*:parameters'    ignored-patterns  \
-  "_(z4h|p9k|_p9k|POWERLEVEL9K|gitstatus|GITSTATUS|zsh_highlight|zsh_autosuggest|ZSH_HIGHLIGHT|ZSH_AUTOSUGGEST)*"
+  "_(z4h|p9k|_p9k|POWERLEVEL9K|gitstatus|GITSTATUS|zsh_highlight|ZSH_HIGHLIGHT)*"
 
 if (( ! _z4h_dangerous_root )); then
   zstyle ':completion:*'             use-cache         "true"
@@ -724,182 +718,6 @@ if [[ -v _z4h_iterm_cmd ]]; then
   -z4h-tmux-bypass '\e]1337;ShellIntegrationVersion=12;shell=zsh\a'
 fi
 -z4h-set-term-title-precmd || return
-
-if (( _z4h_use[zsh-autosuggestions] )); then
-  if (( terminfo[colors] >= 256 )); then
-    LS_COLORS+=':no=38;5;248'
-    ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=244'        # the default is hard to see
-  else
-    LS_COLORS+=':no=1;30'
-    ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=black,bold' # the default is outside of 8-color range
-  fi
-
-  ZSH_AUTOSUGGEST_MANUAL_REBIND=1
-
-  # Tell zsh-autosuggestions how to handle different widgets.
-  typeset -g ZSH_AUTOSUGGEST_EXECUTE_WIDGETS=()
-  typeset -g ZSH_AUTOSUGGEST_CLEAR_WIDGETS=(
-    z4h-fzf-history
-    z4h-down-prefix-global
-    z4h-down-prefix-local
-    z4h-up-prefix-global
-    z4h-up-prefix-local
-  )
-  if (( _z4h_use[zsh-history-substring-search] )); then
-    ZSH_AUTOSUGGEST_CLEAR_WIDGETS+=(
-      z4h-down-substring-global
-      z4h-down-substring-local
-      z4h-up-substring-global
-      z4h-up-substring-local
-    )
-  fi
-  typeset -g ZSH_AUTOSUGGEST_PARTIAL_ACCEPT_WIDGETS=(
-    emacs-forward-word
-    forward-word
-    vi-find-next-char
-    vi-find-next-char-skip
-    vi-forward-blank-word
-    vi-forward-blank-word-end
-    vi-forward-word
-    vi-forward-word-end
-    z4h-forward-word
-    z4h-forward-zword
-  )
-  typeset -g ZSH_AUTOSUGGEST_ACCEPT_WIDGETS=(
-    z4h-end-of-buffer
-  )
-
-  if zstyle -T :z4h:autosuggestions forward-char accept; then
-    ZSH_AUTOSUGGEST_ACCEPT_WIDGETS+=(forward-char vi-forward-char)
-  else
-    ZSH_AUTOSUGGEST_PARTIAL_ACCEPT_WIDGETS+=(forward-char vi-forward-char)
-  fi
-
-  if zstyle -T :z4h:autosuggestions end-of-line accept; then
-    ZSH_AUTOSUGGEST_ACCEPT_WIDGETS+=(end-of-line vi-add-eol vi-end-of-line)
-  else
-    ZSH_AUTOSUGGEST_PARTIAL_ACCEPT_WIDGETS+=(end-of-line vi-add-eol vi-end-of-line)
-  fi
-
-  builtin source $Z4H/zsh-autosuggestions/zsh-autosuggestions.zsh
-  precmd_functions=(${precmd_functions:#_zsh_autosuggest_start})
-
-  _zsh_autosuggest_widget_execute() {
-    -z4h-autosuggest-fetch
-    if [[ -n $POSTDISPLAY ]]; then
-      BUFFER=$BUFFER$POSTDISPLAY
-      region_highlight[-1]=()
-      typeset -g _z4h_autosuggest_buffer=$BUFFER
-      unset _z4h_autosuggestion POSTDISPLAY
-    fi
-    zle .accept-line
-  }
-
-  _zsh_autosuggest_widget_clear() {
-    _zsh_autosuggest_invoke_original_widget "$@"
-    local -i ret=$?
-    if [[ $CONTEXT == start ]]; then
-      [[ -z $POSTDISPLAY ]] || region_highlight[-1]=()
-      if (( ret )); then
-        -z4h-autosuggest-fetch
-      else
-        typeset -g _z4h_autosuggest_buffer=$BUFFER
-        unset _z4h_autosuggestion POSTDISPLAY
-      fi
-    fi
-    return ret
-  }
-
-  _zsh_autosuggest_widget_accept() {
-    -z4h-autosuggest-fetch
-    if (( ${#POSTDISPLAY} == 0 || CURSOR < _z4h_cursor_max() )); then
-      _zsh_autosuggest_invoke_original_widget "$@"
-      return
-    fi
-    BUFFER="$BUFFER$POSTDISPLAY"
-    region_highlight[-1]=()
-    unset _z4h_autosuggestion POSTDISPLAY
-    _zsh_autosuggest_invoke_original_widget "$@"
-    local -i ret=$?
-    typeset -g _z4h_autosuggest_buffer="$BUFFER"
-    typeset -gi CURSOR='_z4h_cursor_max()'
-    return ret
-  }
-
-  _zsh_autosuggest_widget_partial_accept() {
-    -z4h-autosuggest-fetch
-    if (( ${#POSTDISPLAY} == 0 || CURSOR < _z4h_cursor_max() )); then
-      _zsh_autosuggest_invoke_original_widget "$@"
-      return
-    fi
-    local -i buf_len=${#BUFFER}
-    BUFFER="$BUFFER$POSTDISPLAY"
-    _zsh_autosuggest_invoke_original_widget "$@"
-    local -i ret=$?
-    local -i cursor=CURSOR
-    if [[ $KEYMAP == vicmd && -n ${BUFFER##*$'\n'} ]]; then
-      (( ++cursor ))
-    fi
-    if (( cursor > buf_len )); then
-      BUFFER=${BUFFER:0:$cursor}
-      POSTDISPLAY=${POSTDISPLAY:$((cursor - buf_len))}
-    else
-      BUFFER=${BUFFER:0:$buf_len}
-    fi
-    typeset -g _z4h_autosuggest_buffer=$BUFFER
-    return ret
-  }
-
-  _zsh_autosuggest_widget_modify() {
-    _zsh_autosuggest_invoke_original_widget "$@"
-    local -i retval=$?
-    [[ -z $POSTDISPLAY ]] || region_highlight[-1]=()
-    -z4h-autosuggest-fetch
-    return retval
-  }
-
-  _zsh_autosuggest_widget_fetch() {
-    [[ -z $POSTDISPLAY ]] || region_highlight[-1]=()
-    -z4h-autosuggest-fetch
-  }
-
-  _zsh_autosuggest_widget_suggest() {
-    [[ -z $BUFFER || $CONTEXT != start ]] && return
-    [[ -z $POSTDISPLAY ]] || region_highlight[-1]=()
-    POSTDISPLAY=${1-}
-    typeset -g _z4h_autosuggest_buffer="$BUFFER"
-    typeset -g _z4h_autosuggestion="${BUFFER}${POSTDISPLAY}"
-    if [[ -n $POSTDISPLAY ]]; then
-      region_highlight+=(
-        "${#BUFFER} $((${#BUFFER} + ${#POSTDISPLAY})) $ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE")
-    fi
-  }
-
-  _zsh_autosuggest_widget_enable() {
-    (( ${+_ZSH_AUTOSUGGEST_DISABLED} )) || return 0
-    unset _ZSH_AUTOSUGGEST_DISABLED
-    _zsh_autosuggest_widget_fetch
-  }
-
-  _zsh_autosuggest_widget_disable() {
-    (( ${+_ZSH_AUTOSUGGEST_DISABLED} )) && return
-    typeset -g _ZSH_AUTOSUGGEST_DISABLED
-    [[ -z $POSTDISPLAY ]] || region_highlight[-1]=()
-    unset POSTDISPLAY _z4h_autosuggest_buffer _z4h_autosuggestion
-  }
-
-  _zsh_autosuggest_widget_toggle() {
-    if (( ${+_ZSH_AUTOSUGGEST_DISABLED} )); then
-      _zsh_autosuggest_widget_enable
-    else
-      _zsh_autosuggest_widget_disable
-    fi
-  }
-else
-  # No-op when autosuggestions are disabled. Don't unset POSTDISPLAY here
-  # because other plugins (e.g. zsh-sage) may use it for ghost text.
-  function -z4h-autosuggest-fetch() { }
-fi
 
 # Define _zsh_highlight before sourcing history-substring-search to work around bugs
 # in the latter: https://github.com/romkatv/zsh4humans/issues/58.
@@ -1036,17 +854,6 @@ function -z4h-post-init() {
         typeset -gi CURSOR='_z4h_cursor_max()'
       fi
     }
-  fi
-
-  if (( _z4h_use[zsh-autosuggestions] )); then
-    local suggest_special=(
-      $ZSH_AUTOSUGGEST_EXECUTE_WIDGETS
-      $ZSH_AUTOSUGGEST_CLEAR_WIDGETS
-      $ZSH_AUTOSUGGEST_PARTIAL_ACCEPT_WIDGETS
-      $ZSH_AUTOSUGGEST_ACCEPT_WIDGETS)
-    typeset -g ZSH_AUTOSUGGEST_IGNORE_WIDGETS=(${${(k)widgets}:|suggest_special})
-    unset ZSH_AUTOSUGGEST_USE_ASYNC
-    _zsh_autosuggest_start
   fi
 
   if [[ -v functions[bracketed-paste-magic] ]]; then

@@ -16,8 +16,7 @@ If you want a great shell that just works, this project is for you.
 - 3. [Try it in Docker](#try-it-in-docker)
 - 4. [Caveats](#caveats)
 - 5. [Usage](#usage)
-  - 5.1. [Accepting autosuggestions](#accepting-autosuggestions)
-  - 5.2. [Completing commands](#completing-commands)
+  - 5.1. [Completing commands](#completing-commands)
   - 5.3. [Searching command history](#searching-command-history)
   - 5.4. [Interactive search with `fzf`](#interactive-search-with-fzf)
   - 5.5. [SSH](#ssh)
@@ -34,8 +33,6 @@ If you want a great shell that just works, this project is for you.
 - Powerful POSIX-based shell preconfigured to work great out of the box.
 - Easy-to-use installation wizard. Does not require `git`, `zsh` or `sudo`.
 - [Syntax highlighting](https://github.com/zsh-users/zsh-syntax-highlighting) for the command line.
-- [Autosuggestions](https://github.com/zsh-users/zsh-autosuggestions) for commands based on command
-  history.
 - [Command prompt](https://github.com/romkatv/powerlevel10k) configurable through a builtin
   configuration wizard.
 - Command completions and history searchable with [fzf](https://github.com/junegunn/fzf).
@@ -100,14 +97,6 @@ recognizes and no description of what those options do.
 
 If you've used Zsh, Bash or Fish before, Zsh for Humans should feel familiar. For the most part
 everything works as you would expect.
-
-### Accepting autosuggestions
-
-All key bindings that move the cursor can accept _command autosuggestions_. For example, moving the
-cursor one word to the right will accept that word from the autosuggestion. The whole autosuggestion
-can be accepted without moving the cursor with <kbd>Alt+M</kbd>/<kbd>Option+M</kbd>.
-
-Autosuggestions in Zsh for Humans are provided by [zsh-autosuggestions](https://github.com/zsh-users/zsh-autosuggestions). See its homepage for more information.
 
 ### Completing commands
 
@@ -219,11 +208,6 @@ command.
 [zsh-syntax-highlighting](https://github.com/zsh-users/zsh-syntax-highlighting). See its homepage
 for documentation on how to customize it.
 
-After `echo hello` you can see `world` in grey. This is not a part of the command, so pressing
-<kbd>Enter</kbd> will print only `hello` but not `world`. The latter is an autosuggestion provided
-by [zsh-autosuggestions](https://github.com/zsh-users/zsh-autosuggestions) that you can
-[accept](#accepting-autosuggestions) in part or in full. It comes from command history and it's a
-great productivity booster. See [zsh-autosuggestions](https://github.com/zsh-users/zsh-autosuggestions) homepage for more information.
 
 Last but not least, your terminal has a say about the appearance of _everything_ that runs within
 it. The base colors, numbered from 0 to 15, can look differently in different terminals and even

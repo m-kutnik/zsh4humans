@@ -18,7 +18,6 @@ if [[ $BUFFER == *' ' ]] &&
   BUFFER=${BUFFER%% #}
 fi
 
-unset POSTDISPLAY _z4h_autosuggest_buffer _z4h_autosuggestion
 if [[ -v region_highlight ]]; then
   _zsh_highlight
 fi

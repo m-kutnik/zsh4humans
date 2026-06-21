@@ -363,7 +363,7 @@ function -z4h-cmd-init() {
       _z4h_install_queue+=(systemd)
     fi
     _z4h_install_queue+=(
-      zsh-history-substring-search zsh-autosuggestions zsh-completions
+      zsh-history-substring-search zsh-completions
       zsh-syntax-highlighting terminfo fzf powerlevel10k)
     (( install_tmux )) && _z4h_install_queue+=(tmux)
     if ! -z4h-install-many; then

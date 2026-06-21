@@ -13,7 +13,6 @@ if [[ -v region_highlight &&
   local _z4h_sage_hl="${_SAGE_LAST_HIGHLIGHT-}"
   local _z4h_sage_pd="${POSTDISPLAY-}"
   _zsh_highlight
-  -z4h-autosuggest-fetch
   # Restore zsh-sage's highlight entry if there was one.
   if [[ -n "$_z4h_sage_hl" ]]; then
     _SAGE_LAST_HIGHLIGHT="$_z4h_sage_hl"

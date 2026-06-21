@@ -98,7 +98,7 @@ Create `fn` directory similarly to `bin`. Add it to `fpath`.
 ---
 
 Add `:z4h:fzf disable yes`. List: `fzf`, `fzf-bin`, `fzf-tab`, `powerlevel10k`, `extra-completions`,
-`autosuggestions`, `syntax-highlighting`. This disabled cloning and all usage.
+`syntax-highlighting`. This disabled cloning and all usage.
 
 ---
 
@@ -197,7 +197,7 @@ Change the structure of `$Z4H` to this:
 │       ├── main.zsh         # defines and calls _z4h_prelude, defines z4h, etc.
 │       └── z4h.zsh          # the same as $Z4H/z4h.zsh but could be newer version; not used
 ├── zsh-users
-│   └── zsh-autosuggestions
+│   └── zsh-completions
 └── z4h.zsh                  # downloaded by zshrc
 ```
 
@@ -510,7 +510,7 @@ Create `~/.zshenv` with just `setopt no_global_rcs` in it.
 ---
 
 Add `z4h use [-d] [-f] [module]...` where `module` is one of the built-in things:
-`zsh-users/zsh-autosuggestions`, `bindkey`, `term-title`, etc.
+`bindkey`, `term-title`, etc.
 
 Without `-d` modules are added to `_z4h_use_queue`. With `-d` they are added to
 `_z4h_use_queue_d[-1]`. The latter is an array with nul separated lists as its elements.
@@ -520,11 +520,6 @@ On `-f` it should install a `precmd` hook called `-z4h-precmd-$#_z4h_install_que
 
 `-z4h-use-rigi` should be the same as the current `-z4h-init` with a bunch of conditions added in:
 
-```zsh
-if (( ${@[(Ie)zsh-users/zsh-autosuggestions]} )); then
-  ...
-fi
-```
 
 It should issue warnings (but not fail) for arguments it doesn't recognize.
 
@@ -544,7 +539,6 @@ bindings, etc.
 
 ```zsh
 local -a mods=()
-zstyle -T :z4h:zsh-users/zsh-autosuggestion install && mods+=zsh-autosuggestion
 ...
 z4h install -f -- $mods
 
@@ -554,7 +548,6 @@ zstyle -T :z4h:compinit use && mods+=compinit
 z4h use -d -- $mods
 
 local -a mods=()
-zstyle -T :z4h:zsh-users/zsh-autosuggestion use && mods+=zsh-autosuggestion
 ...
 z4h use -f -- $mods
 ```

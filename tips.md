@@ -7,26 +7,25 @@ shell.
 
 * 1. [tmux](#tmux)
 * 2. [Prompt at bottom](#prompt-at-bottom)
-* 3. [Autosuggestions](#autosuggestions)
-* 4. [Shell integration](#shell-integration)
-* 5. [Prompt](#prompt)
-* 6. [Terminal title](#terminal-title)
-* 7. [SSH](#ssh)
-  * 7.1. [Extra dotfiles](#extra-dotfiles)
-  * 7.2. [Better hostname reporting](#better-hostname-reporting)
-  * 7.3. [Persistent and shared command history](#persistent-and-shared-command-history)
-  * 7.4. [Unattended teleportation](#unattended-teleportation)
-* 8. [Current directory](#current-directory)
-* 9. [Completions](#completions)
-* 10. [fzf](#fzf)
-* 11. [Word-based widgets](#word-based-widgets)
-* 12. [Oh My Zsh](#oh-my-zsh)
-* 13. [Backup and restore](#backup-and-restore)
-* 14. [vi mode](#vi-mode)
-* 15. [Managing dotfiles](#managing-dotfiles)
-  * 15.1. [Alternative `ZDOTDIR`](#alternative-zdotdir)
-* 16. [Privileged shell](#privileged-shell)
-* 17. [Homebrew](#homebrew)
+* 3. [Shell integration](#shell-integration)
+* 4. [Prompt](#prompt)
+* 5. [Terminal title](#terminal-title)
+* 6. [SSH](#ssh)
+  * 6.1. [Extra dotfiles](#extra-dotfiles)
+  * 6.2. [Better hostname reporting](#better-hostname-reporting)
+  * 6.3. [Persistent and shared command history](#persistent-and-shared-command-history)
+  * 6.4. [Unattended teleportation](#unattended-teleportation)
+* 7. [Current directory](#current-directory)
+* 8. [Completions](#completions)
+* 9. [fzf](#fzf)
+* 10. [Word-based widgets](#word-based-widgets)
+* 11. [Oh My Zsh](#oh-my-zsh)
+* 12. [Backup and restore](#backup-and-restore)
+* 13. [vi mode](#vi-mode)
+* 14. [Managing dotfiles](#managing-dotfiles)
+  * 14.1. [Alternative `ZDOTDIR`](#alternative-zdotdir)
+* 15. [Privileged shell](#privileged-shell)
+* 16. [Homebrew](#homebrew)
 
 ## tmux
 
@@ -95,17 +94,6 @@ alias clear=z4h-clear-screen-soft-bottom
 Note that having prompt always at the *top* is [impossible](
   https://github.com/romkatv/powerlevel10k-media/issues/2#issuecomment-725277867).
 
-## Autosuggestions
-
-Most key shortcuts that move the cursor behave consistently in the presence of
-autosuggestions. The only exceptions are `forward-char`, `vi-forward-char` and
-`end-of-line`. These widgets accept the full autosuggestion instead of just one
-character or one line. This can be fixed with the following options:
-
-```zsh
-zstyle ':z4h:autosuggestions' forward-char partial-accept
-zstyle ':z4h:autosuggestions' end-of-line  partial-accept
-```
 
 ## Shell integration
 

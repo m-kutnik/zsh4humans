@@ -23,7 +23,7 @@ if [[ $1 == */* ]]; then
       changyuheng/fz)
         postinstall=-z4h-postinstall-fz
       ;;
-      zsh-users/(zsh-syntax-highlighting|zsh-autosuggestions|zsh-history-substring-search))
+      zsh-users/(zsh-syntax-highlighting|zsh-history-substring-search))
         postinstall=-z4h-postinstall-zsh-users
       ;;
       *)
@@ -51,7 +51,6 @@ else
         powerlevel10k)                url=https://github.com/romkatv/$1/archive/master.tar.gz;;
         systemd)                      url=https://github.com/systemd/$1/archive/master.tar.gz;;
         zsh-completions)              url=https://github.com/zsh-users/$1/archive/master.tar.gz;;
-        zsh-autosuggestions)          url=https://github.com/zsh-users/$1/archive/master.tar.gz;;
         zsh-syntax-highlighting)      url=https://github.com/zsh-users/$1/archive/master.tar.gz;;
         zsh-history-substring-search) url=https://github.com/zsh-users/$1/archive/master.tar.gz;;
         terminfo)                     url=https://github.com/romkatv/terminfo/archive/v1.3.0.tar.gz;;
