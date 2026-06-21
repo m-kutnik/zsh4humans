@@ -36,6 +36,12 @@
   (( height >= 6 )) || (( height = 6 ))
   (( height <= LINES - 1 )) || (( height = LINES - 1 ))
 
+  local toggle_key
+  zstyle -s :z4h:${WIDGET#z4h-} preview-toggle toggle_key || toggle_key='ctrl-/'
+  local preview_cmd
+  zstyle -s :z4h:${WIDGET#z4h-} preview-command preview_cmd || preview_cmd="$Z4H/zsh4humans/sc/fzf-preview"
+  local preview_window
+  zstyle -s :z4h:${WIDGET#z4h-} preview-window preview_window || preview_window='hidden'
   local opts=(
     --query=${_z4h_word_prefix:+"^$_z4h_word_prefix"}
     --color=hl:201,hl+:201
@@ -48,6 +54,9 @@
     --multi
     --cycle
     --border=rounded
+    --preview "$preview_cmd {1}"
+    --bind "${toggle_key}:toggle-preview"
+    --preview-window=$preview_window
   )
 
   () {
