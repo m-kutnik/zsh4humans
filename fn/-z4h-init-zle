@@ -896,9 +896,9 @@ if (( _z4h_use[zsh-autosuggestions] )); then
     fi
   }
 else
-  function -z4h-autosuggest-fetch() {
-    unset POSTDISPLAY _z4h_autosuggest_buffer _z4h_autosuggestion
-  }
+  # No-op when autosuggestions are disabled. Don't unset POSTDISPLAY here
+  # because other plugins (e.g. zsh-sage) may use it for ghost text.
+  function -z4h-autosuggest-fetch() { }
 fi
 
 # Define _zsh_highlight before sourcing history-substring-search to work around bugs

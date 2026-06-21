@@ -11,23 +11,23 @@ If you want a great shell that just works, this project is for you.
 
 ## Table of contents
 
-* 1. [Features](#features)
-* 2. [Installation](#installation)
-* 3. [Try it in Docker](#try-it-in-docker)
-* 4. [Caveats](#caveats)
-* 5. [Usage](#usage)
-  * 5.1. [Accepting autosuggestions](#accepting-autosuggestions)
-  * 5.2. [Completing commands](#completing-commands)
-  * 5.3. [Searching command history](#searching-command-history)
-  * 5.4. [Interactive search with `fzf`](#interactive-search-with-fzf)
-  * 5.5. [SSH](#ssh)
-* 6. [Customization](#customization)
-  * 6.1. [Customizing prompt](#customizing-prompt)
-  * 6.2. [Customizing appearance](#customizing-appearance)
-  * 6.3. [Additional Zsh startup files](#additional-zsh-startup-files)
-* 7. [Updating](#updating)
-* 8. [Uninstalling](#uninstalling)
-* 9. [Advanced configuration tips](#advanced-configuration-tips)
+- 1. [Features](#features)
+- 2. [Installation](#installation)
+- 3. [Try it in Docker](#try-it-in-docker)
+- 4. [Caveats](#caveats)
+- 5. [Usage](#usage)
+  - 5.1. [Accepting autosuggestions](#accepting-autosuggestions)
+  - 5.2. [Completing commands](#completing-commands)
+  - 5.3. [Searching command history](#searching-command-history)
+  - 5.4. [Interactive search with `fzf`](#interactive-search-with-fzf)
+  - 5.5. [SSH](#ssh)
+- 6. [Customization](#customization)
+  - 6.1. [Customizing prompt](#customizing-prompt)
+  - 6.2. [Customizing appearance](#customizing-appearance)
+  - 6.3. [Additional Zsh startup files](#additional-zsh-startup-files)
+- 7. [Updating](#updating)
+- 8. [Uninstalling](#uninstalling)
+- 9. [Advanced configuration tips](#advanced-configuration-tips)
 
 ## Features
 
@@ -52,9 +52,9 @@ Run this command in bash, zsh, or sh:
 
 ```shell
 if command -v curl >/dev/null 2>&1; then
-  sh -c "$(curl -fsSL https://raw.githubusercontent.com/romkatv/zsh4humans/v5/install)"
+  sh -c "$(curl -fsSL https://raw.githubusercontent.com/m-kutnik/zsh4humans/v5/install)"
 else
-  sh -c "$(wget -O- https://raw.githubusercontent.com/romkatv/zsh4humans/v5/install)"
+  sh -c "$(wget -O- https://raw.githubusercontent.com/m-kutnik/zsh4humans/v5/install)"
 fi
 ```
 
@@ -66,8 +66,7 @@ confirmation on every step so that you are always in control. Installation requi
 <details>
   <summary>Recording of the installation process</summary>
 
-  ![Zsh for Humans installation](
-    https://github.com/romkatv/powerlevel10k-media/raw/32c7d40239c93507277f14522be90b5750f442c9/z4h-install.gif)
+![Zsh for Humans installation](https://github.com/romkatv/powerlevel10k-media/raw/32c7d40239c93507277f14522be90b5750f442c9/z4h-install.gif)
 
 </details>
 
@@ -80,14 +79,14 @@ changes to the file system. Once you exit Zsh, the image is deleted.
   ```zsh
   docker run -e TERM -e COLORTERM -e LC_ALL=C.UTF-8 -w /root -it --detach-keys="ctrl-^,ctrl-@" --rm alpine sh -uec '
     apk add zsh curl tmux
-    sh -c "$(curl -fsSL https://raw.githubusercontent.com/romkatv/zsh4humans/v5/install)"'
+    sh -c "$(curl -fsSL https://raw.githubusercontent.com/m-kutnik/zsh4humans/v5/install)"'
   ```
 - **Ubuntu**: install additional software with `apt install <package>`:
   ```zsh
   docker run -e TERM -e COLORTERM -w /root -it --detach-keys="ctrl-^,ctrl-@" --rm ubuntu sh -uec '
     apt-get update
     apt-get install -y zsh curl tmux
-    sh -c "$(curl -fsSL https://raw.githubusercontent.com/romkatv/zsh4humans/v5/install)"'
+    sh -c "$(curl -fsSL https://raw.githubusercontent.com/m-kutnik/zsh4humans/v5/install)"'
   ```
 
 ## Caveats
@@ -104,16 +103,15 @@ everything works as you would expect.
 
 ### Accepting autosuggestions
 
-All key bindings that move the cursor can accept *command autosuggestions*. For example, moving the
+All key bindings that move the cursor can accept _command autosuggestions_. For example, moving the
 cursor one word to the right will accept that word from the autosuggestion. The whole autosuggestion
 can be accepted without moving the cursor with <kbd>Alt+M</kbd>/<kbd>Option+M</kbd>.
 
-Autosuggestions in Zsh for Humans are provided by [zsh-autosuggestions](
-  https://github.com/zsh-users/zsh-autosuggestions). See its homepage for more information.
+Autosuggestions in Zsh for Humans are provided by [zsh-autosuggestions](https://github.com/zsh-users/zsh-autosuggestions). See its homepage for more information.
 
 ### Completing commands
 
-When completing with <kbd>Tab</kbd>, suggestions come from *completion functions*. For most
+When completing with <kbd>Tab</kbd>, suggestions come from _completion functions_. For most
 commands completion functions are provided by Zsh proper. Additional completion functions are
 contributed by [zsh-completions](https://github.com/zsh-users/zsh-completions). See its homepage
 for the list of commands it supports.
@@ -207,7 +205,7 @@ Different parts of Zsh for Humans UI are rendered by different projects.
 
 ![Zsh for Humans](https://raw.githubusercontent.com/romkatv/powerlevel10k-media/master/prompt-highlight.png)
 
-Everything within the highlighted areas on the screenshot is *prompt*. It is produced by
+Everything within the highlighted areas on the screenshot is _prompt_. It is produced by
 [Powerlevel10k](https://github.com/romkatv/powerlevel10k). See
 [Customizing prompt](#customizing-prompt).
 
@@ -225,13 +223,12 @@ After `echo hello` you can see `world` in grey. This is not a part of the comman
 <kbd>Enter</kbd> will print only `hello` but not `world`. The latter is an autosuggestion provided
 by [zsh-autosuggestions](https://github.com/zsh-users/zsh-autosuggestions) that you can
 [accept](#accepting-autosuggestions) in part or in full. It comes from command history and it's a
-great productivity booster. See [zsh-autosuggestions](
-  https://github.com/zsh-users/zsh-autosuggestions) homepage for more information.
+great productivity booster. See [zsh-autosuggestions](https://github.com/zsh-users/zsh-autosuggestions) homepage for more information.
 
-Last but not least, your terminal has a say about the appearance of *everything* that runs within
+Last but not least, your terminal has a say about the appearance of _everything_ that runs within
 it. The base colors, numbered from 0 to 15, can look differently in different terminals and even
-in the same terminal with different settings. Most modern terminals support *themes*,
-*color palettes* or *color schemes* that allow you to quickly change base colors. If colors in your
+in the same terminal with different settings. Most modern terminals support _themes_,
+_color palettes_ or _color schemes_ that allow you to quickly change base colors. If colors in your
 terminal look unpleasant, try a different theme. Note that colors with codes above 15, as well as
 colors specified as RGB triplets, don't get affected by terminal themes. They look the same
 everywhere.
